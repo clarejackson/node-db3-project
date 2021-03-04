@@ -1,3 +1,5 @@
+const db = require("../../data/db-config")
+
 function find() { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
@@ -15,9 +17,18 @@ function find() { // EXERCISE A
     2A- When you have a grasp on the query go ahead and build it in Knex.
     Return from this function the resulting dataset.
   */
+ return db("schemes as sc")
+  .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
+  .groupBy("sc.scheme_id")
+  .orderBy("sc.scheme_id", "asc")
+  .select("sc.*")
+  .count({number_of_steps: "st.step_id"})
+ 
 }
 
-function findById(scheme_id) { // EXERCISE B
+
+async function findById(scheme_id) { // EXERCISE B
+  // console.log(scheme_id)
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -83,6 +94,22 @@ function findById(scheme_id) { // EXERCISE B
         "steps": []
       }
   */
+
+  const dbResponse = await db({sc: "schemes"})
+      .leftJoin({st: "steps"}, "sc.scheme_id", "st.scheme_id")
+      .where("sc.scheme_id", scheme_id)
+      .select("sc.scheme_name", "st.*")
+      .orderBy("st.step_number", "asc")
+
+      let resObj = { scheme_id: dbResponse[0].scheme_id, scheme_name: dbResponse[0].scheme_name, steps: []}
+
+      dbResponse.forEach((e) => {
+       delete e.scheme_name
+       delete e.scheme_id
+       resObj.steps.push(e)
+      })
+
+      return resObj
 }
 
 function findSteps(scheme_id) { // EXERCISE C
