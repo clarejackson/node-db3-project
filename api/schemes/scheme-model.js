@@ -22,7 +22,7 @@ function find() { // EXERCISE A
   .groupBy("sc.scheme_id")
   .orderBy("sc.scheme_id", "asc")
   .select("sc.*")
-  .count({number_of_steps: "st.step_id"})
+  .count("st.step_id as number_of_steps")
  
 }
 
@@ -95,8 +95,8 @@ async function findById(scheme_id) { // EXERCISE B
       }
   */
 
-  const dbResponse = await db({sc: "schemes"})
-      .leftJoin({st: "steps"}, "sc.scheme_id", "st.scheme_id")
+  const dbResponse = await db("schemes as sc")
+      .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
       .where("sc.scheme_id", scheme_id)
       .select("sc.scheme_name", "st.*")
       .orderBy("st.step_number", "asc")
