@@ -133,6 +133,11 @@ function findSteps(scheme_id) { // EXERCISE C
         }
       ]
   */
+ return db("steps as st")
+ .join("schemes as sc", "sc.scheme_id", "st.scheme_id")
+ .where("st.scheme_id", scheme_id)
+ .select("st.step_id", "st.step_number", "st.instructions", "sc.scheme_name")
+ .orderBy("st.step_number", "asc")
 }
 
 function add(scheme) { // EXERCISE D
